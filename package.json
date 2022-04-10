@@ -1,0 +1,27 @@
+{
+  "name": "wetube",
+  "version": "1.0.0",
+  "description": "Wetube Clone built using NodeJS, Express, Mongo, and ES6",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kangkyeongseo/wetube.git"
+  },
+  "scripts": {
+    "dev": "nodemon --exec babel-node index.js"
+  },
+  "author": "Kang Kyeong Seo <kks_big@naver.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kangkyeongseo/wetube/issues"
+  },
+  "homepage": "https://github.com/kangkyeongseo/wetube#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@babel/node": "^7.16.8",
+    "@babel/preset-env": "^7.16.11",
+    "nodemon": "^2.0.15"    
+  }
+}

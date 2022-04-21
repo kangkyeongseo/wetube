@@ -1,7 +1,6 @@
 import User from "../models/User";
 import fetch from "node-fetch";
-import bcrypt from "bcrypt";
-import { is } from "express/lib/request";
+import bcrypt from "bcrypt"  ;
 
 export const getJoin = (req, res) => {
     return res.render("join", {pageTitle: "Join"});
@@ -33,7 +32,7 @@ export const getLogin = (req, res) => res.render("login", {pageTitle:"Login"});
 export const postLogin = async(req, res) => {
     const {username, password} = req.body;
     const pageTitle = "Login";
-    const user = await User.findOne({username});
+    const user = await User.findOne({username, socialOnly: false});
     if(!user) {
         return res.status(400).render("login", {pageTitle, errorMessage: "An account with this username does not exists."});
     }
@@ -93,32 +92,57 @@ export const finishGithubLogin = async(req, res) => {
         if(!emailObj) {
             return res.redirect("/login");    
         }
-        const existingUser = await User.findOne({email: emailObj.email});
-        if(existingUser) {
-            req.session.loggedIn = true;
-            req.session.user = existingUser;
-            return res.redirect("/");
-        }else {
-            const user = await User.create({
-                name: userData.name,
+        let user = await User.findOne({email: emailObj.email});
+        if(!user) {
+            user = await User.create({
+                avatarUrl:userData.avatar_url,
+                name:userData.name,
                 email:emailObj.email,
                 username:userData.login,
                 password:"",
                 socialOnly: true,
                 location:userData.location,
             });
+        }
             req.session.loggedIn = true;
             req.session.user = user;
             return res.redirect("/");
-        }
     }else {
         return res.redirect("/login");
     };
 }
 
-export const edit = (req, res) => res.send("Edit User"); 
-export const remove = (req, res) => res.send("Remove User")
-export const logout = (req, res) => res.send("Log Out")
-export const see = (req, res) => res.send("See User")
+export const logout = (req, res) => {
+    req.session.destroy();
+    return res.redirect("/");
+}
+export const getEdit = (req, res) => {
+    return res.render("edit-profile", {pageTitle: "Edit Profile"});
+}; 
+export const postEdit = async(req, res) => {
+    const {session:{user:{_id}}} = req;
+    const {name, email, username, location} = req.body;
+    
+    const emailCheckUser = await User.exists({email}); 
+    
+    if(emailCheckUser !== null && emailCheckUser._id.toHexString() !== _id){
+        return res.render("edit-profile", {errorMessage:"This email is already in use."});
+    }else{
+        const userCheckUser = await User.exists({username});
+        if(userCheckUser !== null && userCheckUser._id.toHexString() !== _id) {
+            return res.render("edit-profile", {errorMessage:"This username is already in use."});
+        }else {
+            const updatedUser = await User.findByIdAndUpdate(_id, {
+                name,
+                email,
+                username,
+                location,
+            }, {new: true});
+            req.session.user = updatedUser;
+            return res.redirect("/users/edit");        
+        };
+    };
+};
+export const see = (req, res) => res.send("See User");
 
 

@@ -103,7 +103,6 @@ const handleMouseLeave = () => {
 
 const handleKeyDown = (event) => {
   const { code } = event;
-  console.log(event);
   if (code === "Space") {
     handlePlayClick();
   }
@@ -111,13 +110,22 @@ const handleKeyDown = (event) => {
     handleMute();
   }
 };
-videoContainer.addEventListener("click", handlePlayClick);
+
+const handleEnded = () => {
+  const { id } = videoContainer.dataset;
+  fetch(`/api/videos/${id}/view`, {
+    method: "POST",
+  });
+};
+
+video.addEventListener("click", handlePlayClick);
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMute);
 volumeRange.addEventListener("input", handleVolumeChange);
 timeline.addEventListener("input", handleTimelineChange);
 video.addEventListener("loadeddata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
+video.addEventListener("ended", handleEnded);
 fullScreenBtn.addEventListener("click", handleFullScreen);
 videoContainer.addEventListener("mousemove", handleMouseMove);
 videoContainer.addEventListener("mouseleave", handleMouseLeave);

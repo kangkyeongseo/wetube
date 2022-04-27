@@ -26,10 +26,15 @@ input:not(input[type="range"]) {
 input[type="submit"],
 .social__btn {
   padding: 12px 20px;
-  color: rgba($color: $red, $alpha: 1);
-  background-color: #fff;
-  text-align: center;
+  color: rgba($color: $red, $alpha: 1) !important;
+  background-color: #fff !important;
+  text-align: center !important;
   cursor: pointer;
   display: block;
   border-radius: 5px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
 }

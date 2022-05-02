@@ -2,6 +2,7 @@ import { async } from "regenerator-runtime";
 import User from "../models/User";
 import Video from "../models/Video";
 import Comment from "../models/Comment";
+import res from "express/lib/response";
 
 export const home = async (req, res) => {
   const videos = await Video.find({})
@@ -12,6 +13,7 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id).populate("owner").populate("comments");
+
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
   } else {
@@ -153,4 +155,27 @@ export const createComment = async (req, res) => {
   video.save();
 
   return res.status(201).json({ newCommentId: comment._id });
+};
+
+export const deleteComment = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+  const comment = await Comment.findById(id).populate("owner");
+
+  if (!comment) {
+    return res.sendStatus(400);
+  }
+
+  if (String(req.session.user._id) !== String(comment.owner._id)) {
+    return res.sendStatus(400);
+  }
+
+  const video = await Video.findById(comment.video._id);
+  video.comments.splice(video.comments.indexOf(id), 1);
+  await video.save();
+
+  await Comment.findByIdAndDelete(id);
+
+  return res.sendStatus(200);
 };

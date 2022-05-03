@@ -2,7 +2,6 @@ import { async } from "regenerator-runtime";
 import User from "../models/User";
 import Video from "../models/Video";
 import Comment from "../models/Comment";
-import res from "express/lib/response";
 
 export const home = async (req, res) => {
   const videos = await Video.find({})
@@ -27,6 +26,7 @@ export const getEdit = async (req, res) => {
     user: { _id },
   } = req.session;
   const video = await Video.findById(id);
+  console.log(video.owner, req.session.user._id);
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
   } else {

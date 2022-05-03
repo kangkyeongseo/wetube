@@ -13,7 +13,7 @@ const isHeroku = process.env.NODE_ENV === "production";
 
 const s3ImageUploader = multerS3({
   s3: s3,
-  bucket: "wetube-clone-project.images",
+  bucket: "wetube-clone-project/images",
   acl: "public-read",
 });
 
